@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -13,7 +14,14 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	phoneStore.Insert([]*store.PhoneNumber{
+	// insertSampleData(phoneStore)
+	// queryAndDisplay(phoneStore)
+	normalizeNumbers(phoneStore)
+	queryAndDisplay(phoneStore)
+}
+
+func insertSampleData(s *store.PhoneStore) {
+	s.Insert([]*store.PhoneNumber{
 		{Number: "1234567890"},
 		{Number: "123 456 7891"},
 		{Number: "(123) 456 7892"},
@@ -23,4 +31,22 @@ func main() {
 		{Number: "1234567892"},
 		{Number: "(123)456-7892"},
 	})
+}
+
+func queryAndDisplay(s *store.PhoneStore) {
+	phoneNums, err := s.GetAll()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for _, pn := range phoneNums {
+		fmt.Println(pn.Number)
+	}
+}
+
+func normalizeNumbers(s *store.PhoneStore) {
+	err := s.Normalize(normalizePhone)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }

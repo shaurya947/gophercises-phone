@@ -38,3 +38,33 @@ func (ps *PhoneStore) Insert(phoneNums []*PhoneNumber) error {
 
 	return nil
 }
+
+func (ps *PhoneStore) GetAll() ([]PhoneNumber, error) {
+	var phoneNums []PhoneNumber
+	result := ps.db.Find(&phoneNums)
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+	return phoneNums, nil
+}
+
+// Takes as input the function to apply to each DB entry to normalize it
+func (ps *PhoneStore) Normalize(fn func(string) (string, error)) error {
+	phoneNums, err := ps.GetAll()
+	if err != nil {
+		return err
+	}
+
+	for _, pn := range phoneNums {
+		pn.Number, err = fn(pn.Number)
+		if err != nil {
+			return err
+		}
+		result := ps.db.Save(&pn)
+		if err := result.Error; err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
