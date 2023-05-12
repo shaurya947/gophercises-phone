@@ -16,7 +16,9 @@ func main() {
 
 	// insertSampleData(phoneStore)
 	// queryAndDisplay(phoneStore)
-	normalizeNumbers(phoneStore)
+	// normalizeNumbers(phoneStore)
+	// queryAndDisplay(phoneStore)
+	// removeDupes(phoneStore)
 	queryAndDisplay(phoneStore)
 }
 
@@ -46,6 +48,13 @@ func queryAndDisplay(s *store.PhoneStore) {
 
 func normalizeNumbers(s *store.PhoneStore) {
 	err := s.Normalize(normalizePhone)
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func removeDupes(s *store.PhoneStore) {
+	err := s.RemoveDupes()
 	if err != nil {
 		log.Fatalln(err)
 	}

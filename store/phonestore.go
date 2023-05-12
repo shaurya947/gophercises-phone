@@ -68,3 +68,27 @@ func (ps *PhoneStore) Normalize(fn func(string) (string, error)) error {
 
 	return nil
 }
+
+func (ps *PhoneStore) RemoveDupes() error {
+	phoneNums, err := ps.GetAll()
+	if err != nil {
+		return err
+	}
+
+	dupesMap := make(map[string][]uint)
+	for _, pn := range phoneNums {
+		ids := dupesMap[pn.Number]
+		dupesMap[pn.Number] = append(ids, pn.ID)
+	}
+
+	for _, ids := range dupesMap {
+		if len(ids) == 1 {
+			continue
+		}
+		result := ps.db.Delete(&phoneNums, ids[1:])
+		if err := result.Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
